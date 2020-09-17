@@ -1,0 +1,3 @@
+**\venv-network
+*.pyc
+db.sqlite3
