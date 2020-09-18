@@ -1,14 +1,43 @@
 from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required
 from django.db import IntegrityError
-from django.http import HttpResponse, HttpResponseRedirect
+from django.forms import ModelForm
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse, Http404
 from django.shortcuts import render
 from django.urls import reverse
 
-from .models import User
+from .models import User, Post 
+
+
+class PostForm(ModelForm):
+    class Meta:
+        model = Post
+        fields = ['content']
 
 
 def index(request):
-    return render(request, "network/index.html")
+    return render(request, "network/index.html", {
+        'form': PostForm(), 
+    })
+
+def post_detail(request, pk):
+
+    # Query for requested post
+    try:
+        post = Post.objects.get(pk=pk)
+    except:
+        raise Http404
+
+    # Return post contents
+    if request.method == 'GET':
+        return JsonResponse(post.serialize())
+
+    # Post must be via GET
+    else:
+        return JsonResponse({
+            "error": "GET request required."
+        }, status=400)
+
 
 
 def login_view(request):
