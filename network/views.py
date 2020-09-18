@@ -1,5 +1,6 @@
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
+from django.core.exceptions import ObjectDoesNotExist
 from django.db import IntegrityError
 from django.forms import ModelForm
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse, Http404
@@ -25,8 +26,8 @@ def post_detail(request, pk):
     # Query for requested post
     try:
         post = Post.objects.get(pk=pk)
-    except:
-        raise Http404
+    except Post.DoesNotExist:
+        return JsonResponse({"error": f"Post id {pk} not found."}, status=404)
 
     # Return post contents
     if request.method == 'GET':
@@ -39,6 +40,21 @@ def post_detail(request, pk):
         }, status=400)
 
 
+    #TODO: implement LIKE 
+
+def post_list(request, type):
+
+    # Return list based on type
+    if type == "all":
+        posts = Post.objects.all()
+    elif type == "following":
+        pass
+    else:
+        return JsonResponse({"error": "Invalid type."}, status=400)
+
+    # Return posts in reverse chronological order 
+    posts = posts.order_by("-timestamp").all()
+    return JsonResponse([post.serialize() for post in posts], safe=False)
 
 def login_view(request):
     if request.method == "POST":
