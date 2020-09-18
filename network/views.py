@@ -21,8 +21,22 @@ def index(request):
         'form': PostForm(), 
     })
 
-def post_detail(request, pk):
 
+def post_list(request, type):
+    # Return posts list based on type
+    if type == "all":
+        posts = Post.objects.all()
+    elif type == "following":
+        pass
+    else:
+        return JsonResponse({"error": "Invalid type."}, status=400)
+
+    # Return posts in reverse chronological order 
+    posts = posts.order_by("-timestamp").all()
+    return JsonResponse([post.serialize() for post in posts], safe=False)
+
+
+def post_detail(request, pk):
     # Query for requested post
     try:
         post = Post.objects.get(pk=pk)
@@ -38,23 +52,23 @@ def post_detail(request, pk):
         return JsonResponse({
             "error": "GET request required."
         }, status=400)
-
-
     #TODO: implement LIKE 
 
-def post_list(request, type):
 
-    # Return list based on type
-    if type == "all":
-        posts = Post.objects.all()
-    elif type == "following":
-        pass
-    else:
-        return JsonResponse({"error": "Invalid type."}, status=400)
+@login_required
+def create_post(request):
 
-    # Return posts in reverse chronological order 
-    posts = posts.order_by("-timestamp").all()
-    return JsonResponse([post.serialize() for post in posts], safe=False)
+    # Create new post must be via POST 
+    if request.method != 'POST':
+        return JsonResponse({"error": "POST request required."}, status=400)
+    form = PostForm(request.POST)
+    if form.is_valid():
+        content = form.cleaned_data['content']
+        user = request.user
+        new = Post(content=content, user=user)
+        new.save()
+        return HtttpResponse("New Post created")
+        
 
 def login_view(request):
     if request.method == "POST":
