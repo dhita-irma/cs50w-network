@@ -30,9 +30,12 @@ def post_list(request, post_filter):
 
     # Return posts by following users 
     elif post_filter == "following":
-        following = request.user.following.all()
-        following_list = [follow.following_user.id for follow in following]
-        posts = Post.objects.filter(creator__in=following_list)
+        if request.user.is_authenticated:
+            following = request.user.following.all()
+            following_list = [follow.following_user.id for follow in following]
+            posts = Post.objects.filter(creator__in=following_list)
+        else:
+            return JsonResponse({"error": f"You need to log in."}, status=401)
     
     # Return posts by a specific user
     else:
