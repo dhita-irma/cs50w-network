@@ -22,15 +22,26 @@ def index(request):
     })
 
 
-def post_list(request, type):
-    # Return posts list based on type
-    if type == "all":
-        posts = Post.objects.all()
-    elif type == "following":
-        pass
-    else:
-        return JsonResponse({"error": "Invalid type."}, status=400)
+def post_list(request, post_filter):
 
+    # Return all posts 
+    if post_filter == "all":
+        posts = Post.objects.all()
+
+    # Return posts by following users 
+    elif post_filter == "following":
+        following = request.user.following.all()
+        following_list = [follow.following_user.id for follow in following]
+        posts = Post.objects.filter(creator__in=following_list)
+    
+    # Return posts by a specific user
+    else:
+        try: 
+            user = User.objects.get(username=post_filter)
+            posts = Post.objects.filter(creator=user.id)
+        except User.DoesNotExist:
+            return JsonResponse({"error": f"User '{post_filter}' not found."}, status=404)
+    
     # Return posts in reverse chronological order 
     posts = posts.order_by("-timestamp").all()
     return JsonResponse([post.serialize() for post in posts], safe=False)
@@ -56,7 +67,8 @@ def post_detail(request, pk):
 
 
 def follow_list(request, username, fol_type):
-    # Query for requested data
+
+    # Query for requested user
     try: 
         user = User.objects.get(username=username)
     except User.DoesNotExist:
@@ -88,7 +100,7 @@ def follow_list(request, username, fol_type):
             }
 
         else:
-            return JsonResponse({"error": "'following' or 'followers' parameter required."}, status=400)
+            return JsonResponse({"error": "Only 'following' or 'followers' parameter accepted."}, status=400)
 
         # Return JSON Response 
         return JsonResponse(data, safe=False)
