@@ -12,3 +12,4 @@ class PostAdmin(admin.ModelAdmin):
 
 admin.site.register(User, UserAdmin)
 admin.site.register(Post, PostAdmin)
+admin.site.register(UserFollowing)

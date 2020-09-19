@@ -7,7 +7,7 @@ from django.http import HttpResponse, HttpResponseRedirect, JsonResponse, Http40
 from django.shortcuts import render
 from django.urls import reverse
 
-from .models import User, Post 
+from .models import User, Post, UserFollowing
 
 
 class PostForm(ModelForm):
@@ -53,6 +53,32 @@ def post_detail(request, pk):
             "error": "GET request required."
         }, status=400)
     #TODO: implement LIKE 
+
+
+@login_required
+def following(request):
+    # Query for requested data
+    try: 
+        obj = UserFollowing.objects.filter(user=request.user.id)
+    except UserFollowing.DoesNotExist:
+        return JsonResponse({"error": f"User id {pk} not found."}, status=404)
+
+    # Return following list
+    following_list = []
+    if request.method == 'GET':
+        for i in range(len(obj)):
+            following_list.append(obj[i].following_user.username)
+        data = {
+            "user": request.user.username,
+            "following": following_list
+        }
+        return JsonResponse(data, safe=False)
+
+    # Post must be via GET
+    else:
+        return JsonResponse({
+            "error": "GET request required."
+        }, status=400)
 
 
 @login_required
