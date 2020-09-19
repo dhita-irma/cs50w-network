@@ -55,23 +55,42 @@ def post_detail(request, pk):
     #TODO: implement LIKE 
 
 
-@login_required
-def following(request):
+def follow_list(request, username, fol_type):
     # Query for requested data
     try: 
-        obj = UserFollowing.objects.filter(user=request.user.id)
-    except UserFollowing.DoesNotExist:
-        return JsonResponse({"error": f"User id {pk} not found."}, status=404)
+        user = User.objects.get(username=username)
+    except User.DoesNotExist:
+        return JsonResponse({"error": f"User {username} not found."}, status=404)
 
-    # Return following list
-    following_list = []
+    # Get follow list
+    follow_list = []
     if request.method == 'GET':
-        for i in range(len(obj)):
-            following_list.append(obj[i].following_user.username)
-        data = {
-            "user": request.user.username,
-            "following": following_list
-        }
+
+        if fol_type == 'following':
+            fols = user.following.all()
+            for i in range(len(fols)):
+                follow_list.append(fols[i].following_user.username)
+
+            data = {
+                "user": username,
+                "following": follow_list
+            }
+
+        elif fol_type == 'followers':
+            fols = user.followers.all()
+
+            for i in range(len(fols)):
+                follow_list.append(fols[i].user.username)
+
+            data = {
+                "user": username,
+                "followers": follow_list
+            }
+
+        else:
+            return JsonResponse({"error": "'following' or 'followers' parameter required."}, status=400)
+
+        # Return JSON Response 
         return JsonResponse(data, safe=False)
 
     # Post must be via GET

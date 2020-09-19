@@ -34,9 +34,3 @@ class UserFollowing(models.Model):
 
     def __str__(self):
         return f"{self.user} follows {self.following_user}"
-
-    def serialize(self):
-        return {
-            "user": self.user.username,
-            "following": self.following_user.username
-        }
