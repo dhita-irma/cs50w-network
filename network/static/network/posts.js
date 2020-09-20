@@ -33,17 +33,13 @@ function load_post(feed) {
                 postItem.className = 'post-item';
 
                 postItem.innerHTML = `
-                    <div class="card mb-3">
-                        <div class="card-header">
-                            ${posts[i].creator}
-                        </div>
-                        <div class="card-body">
-                        <blockquote class="blockquote mb-0">
-                            <p>${posts[i].content}</p>
-                            <footer class="blockquote-footer">${posts[i].timestamp}</footer>
-                        </blockquote>
-                        </div>
+                <div class="card mb-3">
+                    <h5 class="card-header">${posts[i].creator}</h5>
+                    <div class="card-body">
+                        <p class="card-text">${posts[i].content}</p>
                     </div>
+                    <div class="card-footer">${posts[i].timestamp}</div>
+                </div>
                 `
 
                 // Append postItem to #post
