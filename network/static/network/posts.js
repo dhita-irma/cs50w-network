@@ -4,6 +4,9 @@ document.addEventListener('DOMContentLoaded', function() {
     document.querySelector('#all').addEventListener('click', () => load_post('all'));
     document.querySelector('#following').addEventListener('click', () => load_post('following'));
 
+    // Submit Post 
+    document.querySelector('#create-post-btn').addEventListener('click', () => send_post());
+
     // By deafult, load all posts 
     load_post('all');
 
@@ -13,6 +16,9 @@ function load_post(feed) {
     
     // Show feed title
     document.querySelector('#title').innerHTML = `${feed.toUpperCase()}`
+
+    // Clear post textarea
+    document.querySelector('#post-content').value = "";
 
 
     fetch(`/posts/${feed}`)
@@ -49,3 +55,25 @@ function load_post(feed) {
         }); // .then
 
 } // func load_post
+
+function send_post() {
+
+    const content = document.querySelector('#post-content').value;
+    var token = document.getElementsByName("csrfmiddlewaretoken")[0].value;
+
+    // Send post 
+    fetch('/posts/', {
+        method: 'POST',
+        credentials: 'same-origin',
+        headers: {"X-CSRFToken": token},
+        body: JSON.stringify({
+            content: content,
+        }) 
+    }) // fetch
+    .then(response => response.json())
+    .then(result => {
+        console.log(result);
+        load_post('all');
+    }); //then
+
+} // func send_post

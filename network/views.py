@@ -1,3 +1,4 @@
+import json
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist
@@ -121,13 +122,17 @@ def create_post(request):
     # Create new post must be via POST 
     if request.method != 'POST':
         return JsonResponse({"error": "POST request required."}, status=400)
-    form = PostForm(request.POST)
-    if form.is_valid():
-        content = form.cleaned_data['content']
-        user = request.user
-        new = Post(content=content, user=user)
-        new.save()
-        return HtttpResponse("New Post created")
+
+    # Take JSON string and convert it to dict 
+    data = json.loads(request.body)
+    content = data.get("content", "")
+    
+    # Save post to database
+    post = Post(content=content, creator=request.user)
+    post.save()
+
+    return JsonResponse({"message": "Post sent successfully."}, status=201)
+
         
 
 def login_view(request):
