@@ -22,14 +22,14 @@ def index(request):
     })
 
 
-def post_list(request, post_filter):
+def post_list(request, feed):
 
     # Return all posts 
-    if post_filter == "all":
+    if feed == "all":
         posts = Post.objects.all()
 
     # Return posts by following users 
-    elif post_filter == "following":
+    elif feed == "following":
         if request.user.is_authenticated:
             following = request.user.following.all()
             following_list = [follow.following_user.id for follow in following]
@@ -40,10 +40,10 @@ def post_list(request, post_filter):
     # Return posts by a specific user
     else:
         try: 
-            user = User.objects.get(username=post_filter)
+            user = User.objects.get(username=feed)
             posts = Post.objects.filter(creator=user.id)
         except User.DoesNotExist:
-            return JsonResponse({"error": f"User '{post_filter}' not found."}, status=404)
+            return JsonResponse({"error": f"User '{feed}' not found."}, status=404)
     
     # Return posts in reverse chronological order 
     posts = posts.order_by("-timestamp").all()

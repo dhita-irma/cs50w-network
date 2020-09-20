@@ -1,5 +1,14 @@
 {% extends "network/layout.html" %}
+{% load static %}
 
 {% block body %}
-    TODO
+    <h3 id="title"></h3>
+    
+    <div id="create-post"></div>
+
+    <div id="posts"></div>
+{% endblock %}
+
+{% block script %}
+    <script src="{% static 'network/posts.js' %}"></script>
 {% endblock %}
