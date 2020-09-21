@@ -2,22 +2,24 @@
 {% load static %}
 
 {% block body %}
+
+    {% if user.is_authenticated %}
     <h3 id="title" class="text-center"></h3>
-    
-    <div id="create-post" class="row">
-        <div class="col-8 offset-2 mb-4">
-            <form id="post-form">
-                {% csrf_token %}
-                <div class="form-group">
+        <div id="create-post" class="row">
+            <div class="col-8 offset-2 mb-4">
+                <form id="post-form">
+                    {% csrf_token %}
                     <div class="form-group">
-                        <label></label>
-                        <textarea id="post-content" class="form-control" rows="4"></textarea>
-                        <button id="create-post-btn" type="button" class="btn btn-primary my-2 float-right">Send</button>
+                        <div class="form-group">
+                            <label></label>
+                            <textarea id="post-content" class="form-control" rows="4"></textarea>
+                            <button id="create-post-btn" type="button" class="btn btn-primary my-2 float-right">Send</button>
+                        </div>
                     </div>
-                </div>
-            </form>
+                </form>
+            </div>
         </div>
-    </div>
+    {% endif %}
 
     <div class="row">
         <div class="col-10 offset-1">

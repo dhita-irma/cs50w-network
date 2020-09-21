@@ -11,16 +11,8 @@ from django.urls import reverse
 from .models import User, Post, UserFollowing
 
 
-class PostForm(ModelForm):
-    class Meta:
-        model = Post
-        fields = ['content']
-
-
 def index(request):
-    return render(request, "network/index.html", {
-        'form': PostForm(), 
-    })
+    return render(request, "network/index.html")
 
 
 def post_list(request, feed):
