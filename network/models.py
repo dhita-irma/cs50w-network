@@ -23,6 +23,9 @@ class Post(models.Model):
     def __str__(self):
         return f"{self.creator} - {self.content}"
 
+    def like_count(self):
+        return self.likes.all().count()
+
     # Return JSON representation of the email
     def serialize(self):
         return {

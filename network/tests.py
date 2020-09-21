@@ -38,6 +38,13 @@ class ModelsTestCase(TestCase):
         self.assertEqual(post_likes.count(), 1)
         self.assertCountEqual(liked_posts, [self.post2])
 
+    def test_post_like_count(self):
+        Like.objects.create(user=self.user1, post=self.post2)
+        Like.objects.create(user=self.user2, post=self.post2)
+        Like.objects.create(user=self.user3, post=self.post2)
+        like_count = self.post2.like_count()
+        self.assertEqual(like_count, 3)
+
     def test_follow_one_user(self):
         followings = self.user2.get_following_list()
         followers = self.user2.get_followers_list()
