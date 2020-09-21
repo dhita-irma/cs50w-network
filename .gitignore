@@ -1,4 +1,5 @@
 **\venv-network
 *.pyc
+.idea/
 db.sqlite3
 todo.md
