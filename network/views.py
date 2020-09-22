@@ -41,8 +41,6 @@ def post_list(request, feed):
 
 
 def post_detail(request, pk):
-    # Query for requested post
-    try:
         post = Post.objects.get(pk=pk)
     except Post.DoesNotExist:
         return JsonResponse({"error": f"Post id {pk} not found."}, status=404)
@@ -114,6 +112,21 @@ def create_post(request):
     post.save()
 
     return JsonResponse({"message": "Post sent successfully."}, status=201)
+
+
+def profile(request, username):
+
+    # Query for requested user
+    try:
+        user = User.objects.get(username=username)
+    except User.DoesNotExist:
+        return JsonResponse({"error": f"User {username} not found."}, status=404)
+
+    # Return JSON response
+    if request.method == 'GET':
+        return JsonResponse(user.serialize())
+    else:
+        return JsonResponse({"error": "GET request required."}, status=400)
 
 
 def login_view(request):
