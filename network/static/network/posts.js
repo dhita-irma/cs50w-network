@@ -26,6 +26,7 @@ function load_post(feed) {
         
         // Hide Profile section
         document.querySelector('#profile-view').style.display = 'none';
+        document.querySelector('#create-post').style.display = 'block';
     } else {
         profile(feed);
     }
@@ -52,7 +53,7 @@ function load_post(feed) {
 
                 postItem.innerHTML = `
                 <div class="card mb-3">
-                    <h5 class="card-header">${posts[i].creator}</h5>
+                    <h5 class="card-header post-creator" onclick="load_post('${posts[i].creator}')">${posts[i].creator}</h5>
                     <div class="card-body">
                         <p class="card-text">${posts[i].content}</p>
                     </div>
@@ -91,6 +92,10 @@ function send_post() {
 } // func send_post
 
 function profile(username) {
+    
+    // Jump to top of page
+    scroll(0,0)
+
     // Show user title & Profile section
     document.querySelector('#title').innerHTML = username;
     document.querySelector('#profile-view').style.display = 'block';
