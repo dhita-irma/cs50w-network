@@ -40,62 +40,6 @@ def post_list(request, feed):
     return JsonResponse([post.serialize() for post in posts], safe=False)
 
 
-def post_detail(request, pk):
-        post = Post.objects.get(pk=pk)
-    except Post.DoesNotExist:
-        return JsonResponse({"error": f"Post id {pk} not found."}, status=404)
-
-    # Return post contents
-    if request.method == 'GET':
-        return JsonResponse(post.serialize())
-
-    # Post must be via GET
-    else:
-        return JsonResponse({
-            "error": "GET request required."
-        }, status=400)
-    #TODO: implement LIKE 
-
-
-def follow_list(request, username, fol_type):
-    """
-    Takes parameter username and fol_type (one of 'following' or 'followers')
-    Return a JsonResponse containing the user and their following / followers. 
-    """
-
-    # Query for requested user
-    try: 
-        user = User.objects.get(username=username)
-    except User.DoesNotExist:
-        return JsonResponse({"error": f"User {username} not found."}, status=404)
-
-    # Get follow list
-    if request.method == 'GET':
-
-        if fol_type == 'following':
-            data = {
-                "user": username,
-                "following": [following.username for following in user.get_following()]
-            }
-
-        elif fol_type == 'followers':
-            data = {
-                "user": username,
-                "followers": [follower.username for follower in user.get_followers()]
-            }
-        else:
-            return JsonResponse({"error": "Only 'following' or 'followers' parameter accepted."}, status=400)
-
-        # Return JSON Response 
-        return JsonResponse(data, safe=False)
-
-    # Post must be via GET
-    else:
-        return JsonResponse({
-            "error": "GET request required."
-        }, status=400)
-
-
 @login_required
 def create_post(request):
 
