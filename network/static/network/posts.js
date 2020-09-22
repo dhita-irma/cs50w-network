@@ -27,15 +27,7 @@ function load_post(feed) {
         // Hide Profile section
         document.querySelector('#profile-view').style.display = 'none';
     } else {
-        // Show user title & Profile section
-        document.querySelector('#title').innerHTML = feed;
-        document.querySelector('#profile-view').style.display = 'block';
-
-        // If requested user is not current_user, hide create post section
-        const current_user = JSON.parse(document.getElementById('current-user').textContent);
-        if (feed !== current_user) {
-            document.querySelector('#create-post').style.display = 'none';
-        }
+        profile(feed);
     }
 
     // Clear post textarea
@@ -97,3 +89,31 @@ function send_post() {
     }); //then
 
 } // func send_post
+
+function profile(username) {
+    // Show user title & Profile section
+    document.querySelector('#title').innerHTML = username;
+    document.querySelector('#profile-view').style.display = 'block';
+
+    // If requested user is not current_user, hide create post section
+    const current_user = JSON.parse(document.getElementById('current-user').textContent);
+    if (username !== current_user) {
+        document.querySelector('#create-post').style.display = 'none';
+    }
+
+    // Show User profile detail 
+    fetch(`/profile/${username}`)
+        .then(response => response.json())
+        .then(data => {
+
+            console.log(data);
+
+            // Show user data 
+            var detailSection = document.querySelector('#user-detail');
+            detailSection.innerHTML = `
+                <h5>Following: ${data.following.length}</h5>
+                <h5>Followers: ${data.followers.length}</h5>
+            `
+        }); // then
+
+} // func profile 
