@@ -57,7 +57,14 @@ function load_post(feed) {
                     <div class="card-body">
                         <p class="card-text">${posts[i].content}</p>
                     </div>
-                    <div class="card-footer">${posts[i].timestamp}</div>
+                    <div class="card-footer">
+                        <div class="row">
+                            <div class="col-6">
+                                <i class="fa fa-thumbs-up" onclick="change_button(this)"> ${posts[i].likes} likes</i>
+                            </div>
+                            <div class="col-6 text-right">${posts[i].timestamp}</div>
+                        </div>
+                    </div>
                 </div>
                 `
 
@@ -122,3 +129,7 @@ function profile(username) {
         }); // then
 
 } // func profile 
+
+function change_button(x) {
+    x.classList.toggle("fa-thumbs-down");
+}

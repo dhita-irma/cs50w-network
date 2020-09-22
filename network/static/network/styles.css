@@ -1,3 +1,7 @@
 .post-nav, .post-creator {
     cursor: pointer;
 }
+
+.fa {
+    font-size: 18px;
+}
