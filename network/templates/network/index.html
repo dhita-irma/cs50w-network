@@ -2,32 +2,44 @@
 {% load static %}
 
 {% block body %}
+    
+    <!-- Current User -->
+    {{ request.user.username|json_script:"current-user" }}
 
     {% if user.is_authenticated %}
-    <h3 id="title" class="text-center"></h3>
+        <!-- Title -->
+        <h3 id="title" class="text-center"></h3>
+
+        <!-- Profile -->
+        <div id="profile-view" class="row">
+            <div class="col-8 offset-2 mb-4">
+                <div class="user-detail text-center">
+                    THIS IS PROFILE SECTION
+                </div>
+            </div>
+        </div>
+        
+        <!-- Create Post -->
         <div id="create-post" class="row">
             <div class="col-8 offset-2 mb-4">
                 <form id="post-form">
                     {% csrf_token %}
                     <div class="form-group">
-                        <div class="form-group">
-                            <label></label>
-                            <textarea id="post-content" class="form-control" rows="4"></textarea>
-                            <button id="create-post-btn" type="button" class="btn btn-primary my-2 float-right">Send</button>
-                        </div>
+                        <label></label>
+                        <textarea id="post-content" class="form-control" rows="4"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <button id="create-post-btn" type="button" class="btn btn-primary">Send</button>
                     </div>
                 </form>
             </div>
         </div>
     {% endif %}
 
-    <div class="row">
+    <div id="posts-view" class="row">
         <div class="col-10 offset-1">
             <div id="posts"></div>
         </div>
     </div>
 {% endblock %}
 
-{% block script %}
-    <script src="{% static 'network/posts.js' %}"></script>
-{% endblock %}

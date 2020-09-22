@@ -1,8 +1,13 @@
 document.addEventListener('DOMContentLoaded', function() {
 
+    const current_user = JSON.parse(document.getElementById('current-user').textContent);
+    console.log(`Current logged in user: ${current_user}`);
+
     // Show sections
     document.querySelector('#all').addEventListener('click', () => load_post('all'));
     document.querySelector('#following').addEventListener('click', () => load_post('following'));
+    document.querySelector('#logged-user').addEventListener('click', () => load_post(current_user));
+    
 
     // Submit Post 
     document.querySelector('#create-post-btn').addEventListener('click', () => send_post());
@@ -10,16 +15,31 @@ document.addEventListener('DOMContentLoaded', function() {
     // By deafult, load all posts 
     load_post('all');
 
+
 });
 
 function load_post(feed) {
     
-    // Show feed title
-    document.querySelector('#title').innerHTML = `${feed.toUpperCase()}`
+    if (feed === 'all' || feed === 'following') {
+        // Show feed title
+        document.querySelector('#title').innerHTML = `${feed.toUpperCase()}`;
+        
+        // Hide Profile section
+        document.querySelector('#profile-view').style.display = 'none';
+    } else {
+        // Show user title & Profile section
+        document.querySelector('#title').innerHTML = feed;
+        document.querySelector('#profile-view').style.display = 'block';
+
+        // If requested user is not current_user, hide create post section
+        const current_user = JSON.parse(document.getElementById('current-user').textContent);
+        if (feed !== current_user) {
+            document.querySelector('#create-post').style.display = 'none';
+        }
+    }
 
     // Clear post textarea
     document.querySelector('#post-content').value = "";
-
 
     fetch(`/posts/${feed}`)
         .then(response => response.json())
