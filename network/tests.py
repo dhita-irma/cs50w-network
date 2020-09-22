@@ -46,8 +46,8 @@ class ModelsTestCase(TestCase):
         self.assertEqual(like_count, 3)
 
     def test_follow_one_user(self):
-        followings = self.user2.get_following_list()
-        followers = self.user2.get_followers_list()
+        followings = self.user2.get_following()
+        followers = self.user2.get_followers()
         self.assertEqual(followings, [self.user3])
         self.assertEqual(followers, [self.user3])
     
@@ -56,7 +56,7 @@ class ModelsTestCase(TestCase):
         self.assertEqual(user1_following, 0)
 
     def test_following_more_than_one(self):
-        user3_followings = self.user3.get_following_list()
+        user3_followings = self.user3.get_following()
         following_count = self.user3.following.count()
         self.assertEqual(user3_followings, [self.user2, self.user4])
         self.assertEqual(following_count, 2)
@@ -66,7 +66,7 @@ class ModelsTestCase(TestCase):
         self.assertEqual(user1_followers, 0)
 
     def test_followers_more_than_one(self):
-        user3_followers = self.user3.get_followers_list()
+        user3_followers = self.user3.get_followers()
         follower_count = self.user3.followers.count()
         self.assertEqual(user3_followers, [self.user2, self.user4])
         self.assertEqual(follower_count, 2)

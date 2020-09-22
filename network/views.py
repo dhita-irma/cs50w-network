@@ -5,6 +5,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.db import IntegrityError
 from django.forms import ModelForm
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse, Http404
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import render
 from django.urls import reverse
 
@@ -63,6 +64,10 @@ def post_detail(request, pk):
 
 
 def follow_list(request, username, fol_type):
+    """
+    Takes parameter username and fol_type (one of 'following' or 'followers')
+    Return a JsonResponse containing the user and their following / followers. 
+    """
 
     # Query for requested user
     try: 
@@ -71,30 +76,19 @@ def follow_list(request, username, fol_type):
         return JsonResponse({"error": f"User {username} not found."}, status=404)
 
     # Get follow list
-    follow_list = []
     if request.method == 'GET':
 
         if fol_type == 'following':
-            fols = user.following.all()
-            for i in range(len(fols)):
-                follow_list.append(fols[i].following_user.username)
-
             data = {
                 "user": username,
-                "following": follow_list
+                "following": [following.username for following in user.get_following()]
             }
 
         elif fol_type == 'followers':
-            fols = user.followers.all()
-
-            for i in range(len(fols)):
-                follow_list.append(fols[i].user.username)
-
             data = {
                 "user": username,
-                "followers": follow_list
+                "followers": [follower.username for follower in user.get_followers()]
             }
-
         else:
             return JsonResponse({"error": "Only 'following' or 'followers' parameter accepted."}, status=400)
 
@@ -125,7 +119,6 @@ def create_post(request):
 
     return JsonResponse({"message": "Post sent successfully."}, status=201)
 
-        
 
 def login_view(request):
     if request.method == "POST":
