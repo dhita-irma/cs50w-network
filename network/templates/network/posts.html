@@ -2,13 +2,43 @@
     <div class="col-10 offset-1">
         <div id="posts">
             {% for post in posts %}
-                <div class="card mb-3">
-                    <a href="{% url 'profile' post.creator %}">
-                        <h5 class="card-header post-creator">{{ post.creator }}</h5>
-                    </a>
+                <div id="{{ post.id }}" class="card mb-3">
+                    <!-- Post Header -->
+                    <div class="card-header pb-1 pt-2">
+                        <div class="row">
+                            <div class="col-10">
+                                <a href="{% url 'profile' post.creator %}">
+                                    <h5 class=" post-creator">{{ post.creator }}</h5>
+                                </a>
+                            </div>
+                            <!-- Edit Button -->
+                            {% if user == post.creator %}
+                            <div class="col-2 text-right">
+                                <i class="fas fa-edit" onclick="toggleEditBtn('{{ post.id }}')"></i>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <!-- Post Body -->
                     <div class="card-body">
+                        <div class="edit-post row" style="display: none;">
+                            <div class="col-12">
+                                <form id="post-form">
+                                    <div class="form-group">
+                                        <label></label>
+                                        <textarea id="post-content" class="form-control" rows="4">{{ post.content }}</textarea>
+                                    </div>
+                                    <div class="form-group">
+                                        <button id="create-post-btn" type="button" class="btn btn-primary" onclick="editPost('{{ post.id }}')">
+                                            Save
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
                         <p class="card-text">{{ post.content }}</p>
                     </div>
+                    <!-- Post Footer -->
                     <div class="card-footer">
                         <div class="row">
                             <div class="col-6">
