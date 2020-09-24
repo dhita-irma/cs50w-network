@@ -79,6 +79,31 @@ def post_list(request, feed):
     return JsonResponse([post.serialize() for post in posts], safe=False)
 
 
+def post(request, pk):
+
+    # Query for requested post
+    try:
+        post = Post.objects.get(pk=pk)
+    except Post.DoesNotExist:
+        return JsonResponse({"error": "Email not found."}, status=404)
+
+    # Return post details
+    if request.method == 'GET':
+        return JsonResponse(post.serialize())
+    
+    # Edit post content
+    elif request.method == 'PUT':
+        data = json.loads(reques.body)
+        if data.get("content") is not None:
+            post.update(content=data["content"])
+            post.save()
+        return HttpResponse(status=204)
+
+    else:
+        return JsonResponse({
+            "error": "GET or PUT request required."
+        }, status=400)
+
 @login_required
 def create_post(request):
 
@@ -94,7 +119,10 @@ def create_post(request):
     post = Post(content=content, creator=request.user)
     post.save()
 
-    return JsonResponse({"message": "Post sent successfully."}, status=201)
+    return JsonResponse({
+        "message": "Post sent successfully.",
+        "post_id": post.id
+    }, status=201)
 
 
 @login_required
