@@ -3,16 +3,33 @@ from django.db import models
 
 
 class User(AbstractUser):
-    pass
+    def get_following(self):
+        """Return a list of following user objects"""
+        return [following.following_user for following in self.following.all()]
+
+    def get_followers(self):
+        """Return a list of followers user objects"""
+        return [follower.user for follower in self.followers.all()]
+
+    def serialize(self):
+        return {
+            "id": self.id,
+            "username": self.username,
+            "following": [following.following_user.username for following in self.following.all()],
+            "followers": [follower.user.username for follower in self.followers.all()]
+        }
+
 
 class Post(models.Model):
     content = models.TextField(max_length=240)
     creator = models.ForeignKey(User, on_delete=models.CASCADE, related_name="posts")
     timestamp = models.DateTimeField(auto_now_add=True)
-    # likes = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, related_name="liked")
 
     def __str__(self):
         return f"{self.creator} - {self.content}"
+
+    def like_count(self):
+        return self.likes.all().count()
 
     # Return JSON representation of the email
     def serialize(self):
@@ -21,7 +38,22 @@ class Post(models.Model):
             "content": self.content,
             "creator": self.creator.username,
             "timestamp": self.timestamp.strftime("%b %d %Y, %I:%M %p"),
+            "likes": self.like_count()
         }
+
+
+class Like(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="liked_posts")
+    post = models.ForeignKey(Post, on_delete=models.CASCADE, related_name="likes")
+    timestamp = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ("user", "post")
+        ordering = ["-timestamp"]
+
+    def __str__(self):
+        return f"{self.user} likes Post {self.post.id}"
+
 
 class UserFollowing(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="following")
@@ -34,9 +66,3 @@ class UserFollowing(models.Model):
 
     def __str__(self):
         return f"{self.user} follows {self.following_user}"
-
-    def serialize(self):
-        return {
-            "user": self.user.username,
-            "following": self.following_user.username
-        }

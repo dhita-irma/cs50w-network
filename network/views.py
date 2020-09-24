@@ -1,84 +1,43 @@
+import json
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
-from django.core.exceptions import ObjectDoesNotExist
-from django.db import IntegrityError
-from django.forms import ModelForm
-from django.http import HttpResponse, HttpResponseRedirect, JsonResponse, Http404
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import render
 from django.urls import reverse
 
 from .models import User, Post, UserFollowing
 
 
-class PostForm(ModelForm):
-    class Meta:
-        model = Post
-        fields = ['content']
-
-
 def index(request):
-    return render(request, "network/index.html", {
-        'form': PostForm(), 
-    })
+    return render(request, "network/index.html")
 
 
-def post_list(request, type):
-    # Return posts list based on type
-    if type == "all":
+def post_list(request, feed):
+
+    # Return all posts 
+    if feed == "all":
         posts = Post.objects.all()
-    elif type == "following":
-        pass
-    else:
-        return JsonResponse({"error": "Invalid type."}, status=400)
 
+    # Return posts by following users 
+    elif feed == "following":
+        if request.user.is_authenticated:
+            following = request.user.following.all()
+            following_list = [follow.following_user.id for follow in following]
+            posts = Post.objects.filter(creator__in=following_list)
+        else:
+            return JsonResponse({"error": f"You need to log in."}, status=401)
+    
+    # Return posts by a specific user
+    else:
+        try: 
+            user = User.objects.get(username=feed)
+            posts = Post.objects.filter(creator=user.id)
+        except User.DoesNotExist:
+            return JsonResponse({"error": f"User '{feed}' not found."}, status=404)
+    
     # Return posts in reverse chronological order 
     posts = posts.order_by("-timestamp").all()
     return JsonResponse([post.serialize() for post in posts], safe=False)
-
-
-def post_detail(request, pk):
-    # Query for requested post
-    try:
-        post = Post.objects.get(pk=pk)
-    except Post.DoesNotExist:
-        return JsonResponse({"error": f"Post id {pk} not found."}, status=404)
-
-    # Return post contents
-    if request.method == 'GET':
-        return JsonResponse(post.serialize())
-
-    # Post must be via GET
-    else:
-        return JsonResponse({
-            "error": "GET request required."
-        }, status=400)
-    #TODO: implement LIKE 
-
-
-@login_required
-def following(request):
-    # Query for requested data
-    try: 
-        obj = UserFollowing.objects.filter(user=request.user.id)
-    except UserFollowing.DoesNotExist:
-        return JsonResponse({"error": f"User id {pk} not found."}, status=404)
-
-    # Return following list
-    following_list = []
-    if request.method == 'GET':
-        for i in range(len(obj)):
-            following_list.append(obj[i].following_user.username)
-        data = {
-            "user": request.user.username,
-            "following": following_list
-        }
-        return JsonResponse(data, safe=False)
-
-    # Post must be via GET
-    else:
-        return JsonResponse({
-            "error": "GET request required."
-        }, status=400)
 
 
 @login_required
@@ -87,14 +46,54 @@ def create_post(request):
     # Create new post must be via POST 
     if request.method != 'POST':
         return JsonResponse({"error": "POST request required."}, status=400)
-    form = PostForm(request.POST)
-    if form.is_valid():
-        content = form.cleaned_data['content']
-        user = request.user
-        new = Post(content=content, user=user)
-        new.save()
-        return HtttpResponse("New Post created")
+
+    # Take JSON string and convert it to dict 
+    data = json.loads(request.body)
+    content = data.get("content", "")
+    
+    # Save post to database
+    post = Post(content=content, creator=request.user)
+    post.save()
+
+    return JsonResponse({"message": "Post sent successfully."}, status=201)
+
+
+@login_required
+def follow(request, pk):
+    
+    # Muust be via POST 
+    if request.method != 'POST':
+        return JsonResponse({"error": "POST request required."}, status=400)
+
+    current_user = request.user
+    target_user = User.objects.get(pk=pk)
+    
+    # Check if current user follow target user 
+    if current_user not in target_user.get_followers():
+        follow = UserFollowing(user=current_user, following_user=target_user)
+        follow.save()
+        return JsonResponse({"message": "Follow user successfully."}, status=201)
+    else: 
+        f = UserFollowing.objects.get(user=current_user, following_user=target_user)
+        f.delete()
+        f.save()
+        return JsonResponse({"message": "Unfollow user successfully."}, status=201)
         
+
+def profile(request, username):
+
+    # Query for requested user
+    try:
+        user = User.objects.get(username=username)
+    except User.DoesNotExist:
+        return JsonResponse({"error": f"User {username} not found."}, status=404)
+
+    # Return JSON response
+    if request.method == 'GET':
+        return JsonResponse(user.serialize())
+    else:
+        return JsonResponse({"error": "GET request required."}, status=400)
+
 
 def login_view(request):
     if request.method == "POST":
