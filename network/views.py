@@ -58,6 +58,28 @@ def create_post(request):
     return JsonResponse({"message": "Post sent successfully."}, status=201)
 
 
+@login_required
+def follow(request, pk):
+    
+    # Muust be via POST 
+    if request.method != 'POST':
+        return JsonResponse({"error": "POST request required."}, status=400)
+
+    current_user = request.user
+    target_user = User.objects.get(pk=pk)
+    
+    # Check if current user follow target user 
+    if current_user not in target_user.get_followers():
+        follow = UserFollowing(user=current_user, following_user=target_user)
+        follow.save()
+        return JsonResponse({"message": "Follow user successfully."}, status=201)
+    else: 
+        f = UserFollowing.objects.get(user=current_user, following_user=target_user)
+        f.delete()
+        f.save()
+        return JsonResponse({"message": "Unfollow user successfully."}, status=201)
+        
+
 def profile(request, username):
 
     # Query for requested user

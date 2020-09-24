@@ -133,3 +133,13 @@ function profile(username) {
 function change_button(x) {
     x.classList.toggle("fa-thumbs-down");
 }
+
+function follow(x, pk) {
+    if (x.innerHTML === 'Follow') {
+        x.innerHTML = "Unfollow";
+    } else {
+        x.innerHTML = "Follow";
+    }
+    x.classList.toggle("btn-danger");
+
+}
