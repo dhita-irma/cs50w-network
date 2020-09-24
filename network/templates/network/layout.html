@@ -3,14 +3,14 @@
 <!DOCTYPE html>
 <html lang="en">
     <head>
-        <title>{% block title %}Social Network{% endblock %}</title>
+        <title>{% block title %} {{ title }} {% endblock %}</title>
         <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
         <link href="{% static 'network/styles.css' %}" rel="stylesheet">
         
         <!-- JS -->
         {% block script %}
-            <script src="{% static 'network/posts.js' %}"></script>
+            <!-- <script src="{% static 'network/posts.js' %}"></script> -->
         {% endblock %}
     </head>
     <body>
@@ -23,15 +23,15 @@
               <ul class="navbar-nav mr-auto">
                 {% if user.is_authenticated %}
                     <li class="nav-item">
-                        <a id="logged-user" class="nav-link" href="#"><strong>{{ user.username }}</strong></a>
+                        <a id="logged-user" class="nav-link" href="{% url 'profile' user.username %}"><strong>{{ user.username }}</strong></a>
                     </li>
                 {% endif %}
                 <li class="nav-item" id="all">
-                    <a class="nav-link post-nav">All Posts</a>
+                    <a class="nav-link post-nav" href="{% url 'index' %}">All Posts</a>
                 </li>
                 {% if user.is_authenticated %}
                     <li class="nav-item" id="following">
-                        <a class="nav-link post-nav">Following</a>
+                        <a class="nav-link post-nav" href="{% url 'following-posts' %}">Following</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'logout' %}">Log Out</a>
@@ -50,6 +50,10 @@
         
         <div class="container body">
             {% block body %}
+            {% endblock %}
+
+            {% block posts %}
+                {% include 'network/posts.html' %}
             {% endblock %}
         </div>
 

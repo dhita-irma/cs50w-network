@@ -9,7 +9,46 @@ from .models import User, Post, UserFollowing
 
 
 def index(request):
-    return render(request, "network/index.html")
+    """Render homepage displaying posts by all users."""
+
+    posts = Post.objects.all()
+    return render(request, "network/index.html", {
+        "title": "Home",
+        "posts": posts
+    })
+
+
+@login_required
+def following_posts(request):
+    """Render page displaying posts by all followed accounts."""
+
+    following = request.user.following.all()
+    following_list = [follow.following_user.id for follow in following]
+
+    # Filter posts created by followed accounts
+    posts = Post.objects.filter(creator__in=following_list)
+    
+    return render(request, "network/index.html", {
+        "title": "Following",
+        "posts": posts
+    })
+
+
+def profile_view(request, username):
+    """Render page displaying user profile"""
+
+    print(username)
+    try: 
+        user = User.objects.get(username=username)
+        posts = Post.objects.filter(creator=user.id)
+    except User.DoesNotExist:
+        return render(request, "network/error.html")
+
+    return render(request, "network/profile.html", {
+        "title": username,
+        "user": user,
+        "posts": posts
+    })
 
 
 def post_list(request, feed):
@@ -78,21 +117,6 @@ def follow(request, pk):
         f.delete()
         f.save()
         return JsonResponse({"message": "Unfollow user successfully."}, status=201)
-        
-
-def profile(request, username):
-
-    # Query for requested user
-    try:
-        user = User.objects.get(username=username)
-    except User.DoesNotExist:
-        return JsonResponse({"error": f"User {username} not found."}, status=404)
-
-    # Return JSON response
-    if request.method == 'GET':
-        return JsonResponse(user.serialize())
-    else:
-        return JsonResponse({"error": "GET request required."}, status=400)
 
 
 def login_view(request):

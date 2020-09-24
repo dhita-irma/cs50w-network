@@ -7,23 +7,6 @@
     {{ request.user.username|json_script:"current-user" }}
 
     {% if user.is_authenticated %}
-        <!-- Title -->
-        <h3 id="title" class="text-center"></h3>
-
-        <!-- Profile -->
-        <div id="profile-view" class="row">
-            <div class="col-8 offset-2 mb-4">
-                <div id="user-detail" class="text-center">
-                    THIS IS PROFILE SECTION
-                </div>
-                <div id="follow" class="text-center">
-                    <button id="follow-btn" type="button" class="btn btn-primary" onclick="follow(this)">
-                        Follow
-                    </button>
-                </div>
-            </div>
-        </div>
-        
         <!-- Create Post -->
         <div id="create-post" class="row">
             <div class="col-8 offset-2 mb-4">
@@ -41,10 +24,5 @@
         </div>
     {% endif %}
 
-    <div id="posts-view" class="row">
-        <div class="col-10 offset-1">
-            <div id="posts"></div>
-        </div>
-    </div>
-{% endblock %}
+{% endblock body %}
 

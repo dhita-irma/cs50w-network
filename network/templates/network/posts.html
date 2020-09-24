@@ -1,0 +1,24 @@
+<div id="posts-view" class="row">
+    <div class="col-10 offset-1">
+        <div id="posts">
+            {% for post in posts %}
+                <div class="card mb-3">
+                    <a href="{% url 'profile' post.creator %}">
+                        <h5 class="card-header post-creator">{{ post.creator }}</h5>
+                    </a>
+                    <div class="card-body">
+                        <p class="card-text">{{ post.content }}</p>
+                    </div>
+                    <div class="card-footer">
+                        <div class="row">
+                            <div class="col-6">
+                                <i class="fa fa-thumbs-up"> {{ post.like_count }} likes</i>
+                            </div>
+                            <div class="col-6 text-right">{{ post.timestamp }}</div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
