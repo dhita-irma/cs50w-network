@@ -10,14 +10,23 @@
     <div id="profile-view" class="row">
         <div class="col-8 offset-2 mb-4">
             <div id="user-detail" class="text-center">
-                <div>Following: {{ profile.get_following|length }}</div>
-                <div>Followers: {{ profile.get_followers|length }}</div>
+                <div id="following-count">Following: {{ profile.get_following|length }}</div>
+                <div id="followers-count">Followers: {{ profile.get_followers|length }}</div>
             </div>
-            <div id="follow" class="text-center">
-                <button id="follow-btn" type="button" class="btn btn-primary" onclick="follow(this)">
+            <!-- Follow Button -->
+            {% if user != profile %}
+            <div id="follow-section" class="text-center">
+                {% if profile in user.get_following %}
+                <button id="follow-btn" type="button" class="btn btn-danger" onclick="toggleFollow(this, '{{ profile.id }}')">
+                    Unfollow
+                </button>
+                {% else %}
+                <button id="follow-btn" type="button" class="btn btn-primary" onclick="toggleFollow(this, '{{ profile.id }}')">
                     Follow
                 </button>
+                {% endif %}
             </div>
+            {% endif %}
         </div>
     </div>
 

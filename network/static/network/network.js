@@ -84,3 +84,36 @@ function editPost(id) {
 }
 
 
+function toggleFollow(btn, id) {
+
+    const token = document.getElementsByName("csrfmiddlewaretoken")[0].value;
+
+    // Follow / unfollow user 
+    fetch(`/follow/${id}`, {
+        method: 'POST',
+        credentials: 'same-origin',
+        headers: {"X-CSRFToken": token}
+    })
+    .then(response => response.json())
+    .then(result => {
+        console.log(result)
+
+        // Update followers count
+        var followersCount = document.querySelector('#followers-count');
+        followersCount.innerHTML = `Followers: ${result.followers_count}`
+
+        // Change button
+        if (btn.classList.contains("btn-primary")) {
+            btn.innerHTML = "Unfollow";
+            btn.classList.remove("btn-primary")
+            btn.classList.add("btn-danger")
+    
+        } else {
+            btn.innerHTML = "Follow";
+            btn.classList.remove("btn-danger")
+            btn.classList.add("btn-primary")
+        }
+
+    }) // then
+
+}

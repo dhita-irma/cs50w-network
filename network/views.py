@@ -140,14 +140,20 @@ def follow(request, pk):
     
     # Check if current user follow target user 
     if current_user not in target_user.get_followers():
-        follow = UserFollowing(user=current_user, following_user=target_user)
-        follow.save()
-        return JsonResponse({"message": "Follow user successfully."}, status=201)
+        f = UserFollowing(user=current_user, following_user=target_user)
+        f.save()
+        return JsonResponse({
+            "message": "Follow user successfully.",
+            "followers_count": len(target_user.get_followers())
+        }, status=201)
     else: 
         f = UserFollowing.objects.get(user=current_user, following_user=target_user)
+        print(f)
         f.delete()
-        f.save()
-        return JsonResponse({"message": "Unfollow user successfully."}, status=201)
+        return JsonResponse({
+            "message": "Unfollow user successfully.",
+            "followers_count": len(target_user.get_followers())
+        }, status=201)
 
 
 def login_view(request):
