@@ -93,16 +93,20 @@ def post(request, pk):
     
     # Edit post content
     elif request.method == 'PUT':
-        data = json.loads(reques.body)
+        data = json.loads(request.body)
+        print(data)
+
         if data.get("content") is not None:
-            post.update(content=data["content"])
+            post.content = data["content"]
             post.save()
-        return HttpResponse(status=204)
+            return JsonResponse({"message": "Post sent successfully."}, status=201)
+        return JsonResponse({"error": "Post is not sent."}, status=404)
 
     else:
         return JsonResponse({
             "error": "GET or PUT request required."
         }, status=400)
+
 
 @login_required
 def create_post(request):
