@@ -37,16 +37,15 @@ def following_posts(request):
 def profile_view(request, username):
     """Render page displaying user profile"""
 
-    print(username)
     try: 
-        user = User.objects.get(username=username)
-        posts = Post.objects.filter(creator=user.id)
+        profile = User.objects.get(username=username)
+        posts = Post.objects.filter(creator=profile.id)
     except User.DoesNotExist:
         return render(request, "network/error.html")
 
     return render(request, "network/profile.html", {
         "title": username,
-        "user": user,
+        "profile": profile,
         "posts": posts
     })
 
@@ -201,3 +200,4 @@ def register(request):
         return HttpResponseRedirect(reverse("index"))
     else:
         return render(request, "network/register.html")
+

@@ -4,14 +4,14 @@
 
 {% block body %}
     <!-- Title -->
-    <h3 id="title" class="text-center"> {{ user.username }} Profile Page</h3>
+    <h3 id="title" class="text-center"> {{ profile.username }} Profile Page</h3>
 
     <!-- Profile -->
     <div id="profile-view" class="row">
         <div class="col-8 offset-2 mb-4">
             <div id="user-detail" class="text-center">
-                <div>Following: {{ user.get_following|length }}</div>
-                <div>Followers: {{ user.get_followers|length }}</div>
+                <div>Following: {{ profile.get_following|length }}</div>
+                <div>Followers: {{ profile.get_followers|length }}</div>
             </div>
             <div id="follow" class="text-center">
                 <button id="follow-btn" type="button" class="btn btn-primary" onclick="follow(this)">
