@@ -21,4 +21,23 @@
         </div>
     </div>
 
+    {% if user == profile %}
+    <!-- Create Post -->
+    <div id="create-post" class="row">
+        <div class="col-8 offset-2 mb-4">
+            <form id="post-form">
+                <div class="form-group">
+                    <label></label>
+                    <textarea id="post-content" class="form-control" rows="4"></textarea>
+                </div>
+                <div class="form-group">
+                    <button id="create-post-btn" type="submit" class="btn btn-primary" onclick="createPost(this)">
+                        Send
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+    {% endif %}
+
 {% endblock %}
