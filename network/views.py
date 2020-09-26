@@ -172,35 +172,6 @@ def follow(request, pk):
         }, status=200)
 
 
-def post_list(request, feed):
-    """API returning post list"""
-
-    # Return all posts 
-    if feed == "all":
-        posts = Post.objects.all()
-
-    # Return posts by following users 
-    elif feed == "following":
-        if request.user.is_authenticated:
-            following = request.user.following.all()
-            following_list = [follow.following_user.id for follow in following]
-            posts = Post.objects.filter(creator__in=following_list)
-        else:
-            return JsonResponse({"error": f"You need to log in."}, status=401)
-    
-    # Return posts by a specific user
-    else:
-        try: 
-            user = User.objects.get(username=feed)
-            posts = Post.objects.filter(creator=user.id)
-        except User.DoesNotExist:
-            return JsonResponse({"error": f"User '{feed}' not found."}, status=404)
-    
-    # Return posts in reverse chronological order 
-    posts = posts.order_by("-timestamp").all()
-    return JsonResponse([post.serialize() for post in posts], safe=False)
-
-
 def login_view(request):
     if request.method == "POST":
 

@@ -11,14 +11,6 @@ class User(AbstractUser):
         """Return a list of followers user objects"""
         return [follower.user for follower in self.followers.all()]
 
-    def serialize(self):
-        return {
-            "id": self.id,
-            "username": self.username,
-            "following": [following.following_user.username for following in self.following.all()],
-            "followers": [follower.user.username for follower in self.followers.all()]
-        }
-
 
 class Post(models.Model):
     content = models.TextField(max_length=240)
@@ -37,7 +29,7 @@ class Post(models.Model):
     def liked_by(self):
         return [item.user for item in self.likes.all()]
 
-    # Return JSON representation of the email
+    # Return JSON representation of the post
     def serialize(self):
         return {
             "id": self.id,
