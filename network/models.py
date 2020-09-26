@@ -34,6 +34,9 @@ class Post(models.Model):
     def like_count(self):
         return self.likes.all().count()
 
+    def liked_by(self):
+        return [item.user for item in self.likes.all()]
+
     # Return JSON representation of the email
     def serialize(self):
         return {

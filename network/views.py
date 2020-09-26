@@ -5,7 +5,7 @@ from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import render
 from django.urls import reverse
 
-from .models import User, Post, UserFollowing
+from .models import User, Post, UserFollowing, Like
 
 
 def index(request):
@@ -34,6 +34,83 @@ def following_posts(request):
     })
 
 
+@login_required
+def create_post(request):
+
+    # Create new post must be via POST 
+    if request.method != 'POST':
+        return JsonResponse({"error": "POST request required."}, status=400)
+
+    # Take JSON string and convert it to dict 
+    data = json.loads(request.body)
+    content = data.get("content", "")
+    
+    # Save post to database
+    post = Post(content=content, creator=request.user)
+    post.save()
+
+    return JsonResponse({
+        "message": "Post sent successfully.",
+        "post_id": post.id
+    }, status=201)
+
+
+def post(request, pk):
+    """API returning post detail and update/edit post"""
+
+    # Query for requested post
+    try:
+        post = Post.objects.get(pk=pk)
+    except Post.DoesNotExist:
+        return JsonResponse({"error": f"Post id {pk} not found."}, status=404)
+
+    # Return post details
+    if request.method == 'GET':
+        return JsonResponse(post.serialize())
+    
+    # Edit post content
+    elif request.method == 'PUT':
+        data = json.loads(request.body)
+
+        if data.get("content") is not None:
+            post.content = data["content"]
+            post.save()
+            return JsonResponse({"message": "Post updated successfully."}, status=200)
+        return JsonResponse({"error": "Post content cannot be None."}, status=404)
+
+    else:
+        return JsonResponse({
+            "error": "GET or PUT request required."
+        }, status=400)
+
+
+@login_required
+def like(request, pk):
+
+    # Must be via POST 
+    if request.method != 'POST':
+        return JsonResponse({"error": "POST request required."}, status=400)
+
+    current_user = request.user
+    post = Post.objects.get(pk=pk)
+
+    # Check if current user like post
+    if current_user not in post.liked_by():
+        like = Like(user=current_user, post=post)
+        like.save()
+        return JsonResponse({
+            "message": "Like post successfully.",
+            "like_count": post.like_count()
+        }, status=200)
+    else: 
+        unlike = Like.objects.get(user=current_user, post=pk)
+        unlike.delete()
+        return JsonResponse({
+            "message": "Unlike post successfully.",
+            "like_count": post.like_count()
+        }, status=200)
+
+
 def profile_view(request, username):
     """Render page displaying user profile"""
 
@@ -50,7 +127,36 @@ def profile_view(request, username):
     })
 
 
+@login_required
+def follow(request, pk):
+    
+    # Muust be via POST 
+    if request.method != 'POST':
+        return JsonResponse({"error": "POST request required."}, status=400)
+
+    current_user = request.user
+    target_user = User.objects.get(pk=pk)
+    
+    # Check if current user follow target user 
+    if current_user not in target_user.get_followers():
+        f = UserFollowing(user=current_user, following_user=target_user)
+        f.save()
+        return JsonResponse({
+            "message": "Follow user successfully.",
+            "followers_count": len(target_user.get_followers())
+        }, status=200)
+    else: 
+        f = UserFollowing.objects.get(user=current_user, following_user=target_user)
+        print(f)
+        f.delete()
+        return JsonResponse({
+            "message": "Unfollow user successfully.",
+            "followers_count": len(target_user.get_followers())
+        }, status=200)
+
+
 def post_list(request, feed):
+    """API returning post list"""
 
     # Return all posts 
     if feed == "all":
@@ -76,84 +182,6 @@ def post_list(request, feed):
     # Return posts in reverse chronological order 
     posts = posts.order_by("-timestamp").all()
     return JsonResponse([post.serialize() for post in posts], safe=False)
-
-
-def post(request, pk):
-
-    # Query for requested post
-    try:
-        post = Post.objects.get(pk=pk)
-    except Post.DoesNotExist:
-        return JsonResponse({"error": "Email not found."}, status=404)
-
-    # Return post details
-    if request.method == 'GET':
-        return JsonResponse(post.serialize())
-    
-    # Edit post content
-    elif request.method == 'PUT':
-        data = json.loads(request.body)
-        print(data)
-
-        if data.get("content") is not None:
-            post.content = data["content"]
-            post.save()
-            return JsonResponse({"message": "Post sent successfully."}, status=201)
-        return JsonResponse({"error": "Post is not sent."}, status=404)
-
-    else:
-        return JsonResponse({
-            "error": "GET or PUT request required."
-        }, status=400)
-
-
-@login_required
-def create_post(request):
-
-    # Create new post must be via POST 
-    if request.method != 'POST':
-        return JsonResponse({"error": "POST request required."}, status=400)
-
-    # Take JSON string and convert it to dict 
-    data = json.loads(request.body)
-    content = data.get("content", "")
-    
-    # Save post to database
-    post = Post(content=content, creator=request.user)
-    post.save()
-
-    return JsonResponse({
-        "message": "Post sent successfully.",
-        "post_id": post.id
-    }, status=201)
-
-
-@login_required
-def follow(request, pk):
-    
-    # Muust be via POST 
-    if request.method != 'POST':
-        return JsonResponse({"error": "POST request required."}, status=400)
-
-    current_user = request.user
-    target_user = User.objects.get(pk=pk)
-    
-    # Check if current user follow target user 
-    if current_user not in target_user.get_followers():
-        f = UserFollowing(user=current_user, following_user=target_user)
-        f.save()
-        return JsonResponse({
-            "message": "Follow user successfully.",
-            "followers_count": len(target_user.get_followers())
-        }, status=201)
-    else: 
-        f = UserFollowing.objects.get(user=current_user, following_user=target_user)
-        print(f)
-        f.delete()
-        return JsonResponse({
-            "message": "Unfollow user successfully.",
-            "followers_count": len(target_user.get_followers())
-        }, status=201)
 
 
 def login_view(request):
@@ -206,4 +234,3 @@ def register(request):
         return HttpResponseRedirect(reverse("index"))
     else:
         return render(request, "network/register.html")
-

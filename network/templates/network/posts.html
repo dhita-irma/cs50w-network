@@ -43,7 +43,16 @@
                     <div class="card-footer">
                         <div class="row">
                             <div class="col-6">
-                                <i class="fa fa-thumbs-up"> {{ post.like_count }} likes</i>
+                                {% if user.is_authenticated %}
+                                    {% if  user in post.liked_by %}
+                                    <i class="fa fa-heart" onclick="toggleLike(this, '{{ post.id }}')"></i>
+                                    {% else %}
+                                    <i class="fa fa-heart-o" onclick="toggleLike(this, '{{ post.id }}')"></i>
+                                    {% endif %}
+                                {% else %}
+                                    <i class="fa fa-heart-o"></i>
+                                {% endif %}
+                                    <span id="like-{{ post.id }}" style="color: black;">{{ post.like_count }} likes</span>
                             </div>
                             <div class="col-6 text-right">{{ post.timestamp }}</div>
                         </div>

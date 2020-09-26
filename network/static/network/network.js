@@ -117,3 +117,35 @@ function toggleFollow(btn, id) {
     }) // then
 
 }
+
+
+function toggleLike(btn, id) {
+
+    const token = document.getElementsByName("csrfmiddlewaretoken")[0].value;
+
+    // Like/Unlike post
+    fetch(`/like/${id}`, {
+        method: 'POST',
+        credentials: 'same-origin',
+        headers: {"X-CSRFToken": token}
+    })
+    .then(response => response.json())
+    .then(result => {
+        console.log(result)
+
+        // Update like count
+        var likeCount = document.querySelector(`#like-${id}`);
+        likeCount.innerHTML = ` ${result.like_count} likes`;
+
+        // Change button
+        if (btn.classList.contains("fa-heart")) {
+            btn.classList.remove("fa-heart")
+            btn.classList.add("fa-heart-o")
+    
+        } else {
+            btn.classList.remove("fa-heart-o")
+            btn.classList.add("fa-heart")
+        }
+
+    }) // then
+}
