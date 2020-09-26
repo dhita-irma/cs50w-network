@@ -4,20 +4,24 @@
 
 {% block body %}
     <!-- Title -->
-    <h3 id="title" class="text-center"> {{ profile.username }} Profile Page</h3>
+    <h3 id="title" class="text-center mt-3"> {{ profile.get_full_name }}</h3>
+    <h5 class="text-center text-muted">@{{ profile }}</h5>
 
     <!-- Profile -->
     <div id="profile-view" class="row">
         <div class="col-8 offset-2 mb-4">
-            <div id="user-detail" class="text-center">
-                <div id="following-count">Following: {{ profile.get_following|length }}</div>
-                <div id="followers-count">Followers: {{ profile.get_followers|length }}</div>
+            <div class="text-center mt-3 mb-2">
+                <div><strong>{{ posts.count }}</strong> posts</div>
+            </div>
+            <div class="text-center mb-3 mt-0">
+                <span id="following-count"><strong>{{ profile.get_following|length }}</strong> following </span> <strong>|</strong>
+                <span id="followers-count"><strong>{{ profile.get_followers|length }}</strong> followers </span>
             </div>
             <!-- Follow Button -->
             {% if user != profile %}
             <div id="follow-section" class="text-center">
                 {% if profile in user.get_following %}
-                <button id="follow-btn" type="button" class="btn btn-danger" onclick="toggleFollow(this, '{{ profile.id }}')">
+                <button id="follow-btn" type="button" class="btn btn-outline-primary" onclick="toggleFollow(this, '{{ profile.id }}')">
                     Unfollow
                 </button>
                 {% else %}

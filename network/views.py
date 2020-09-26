@@ -19,7 +19,7 @@ def index(request):
     page_obj = paginator.get_page(page_number)
 
     return render(request, "network/index.html", {
-        "title": "Home",
+        "title": "All Posts",
         "posts": posts,
         "page_obj": page_obj
     })
@@ -34,10 +34,15 @@ def following_posts(request):
 
     # Filter posts created by followed accounts
     posts = Post.objects.filter(creator__in=following_list)
+    paginator = Paginator(posts, 10)
+
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
     
     return render(request, "network/index.html", {
         "title": "Following",
-        "posts": posts
+        "posts": posts,
+        "page_obj": page_obj
     })
 
 

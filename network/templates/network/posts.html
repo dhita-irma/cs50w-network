@@ -1,84 +1,89 @@
 <div id="posts-view" class="row">
     <div class="col-8 offset-2">
-        <div id="posts">
-            {% for post in page_obj %}
-                <div id="{{ post.id }}" class="card mb-3">
-                    <!-- Post Header -->
-                    <div class="card-header pb-1 pt-2">
-                        <div class="row">
-                            <div class="col-10">
-                                <a href="{% url 'profile' post.creator %}">
-                                    <h5 class=" post-creator">{{ post.creator.get_full_name }}
-                                    <span class="text-muted">@{{ post.creator }}</span></h5>
-                                </a>
-                            </div>
-                            <!-- Edit Button -->
-                            {% if user == post.creator %}
-                            <div class="col-2 text-right">
-                                <i class="fas fa-edit" onclick="toggleEditBtn('{{ post.id }}')"></i>
-                            </div>
-                            {% endif %}
-                        </div>
-                    </div>
-                    <!-- Post Body -->
-                    <div class="card-body">
-                        <div id="edit-post-{{ post.id }}" class="row" style="display: none;">
-                            <div class="col-12">
-                                <form>
-                                    {% csrf_token %}
-                                    <div class="form-group">
-                                        <label></label>
-                                        <textarea class="form-control edit-content" rows="4">{{ post.content }}</textarea>
-                                    </div>
-                                    <div class="form-group">
-                                        <button type="button" class="btn btn-primary" onclick="editPost('{{ post.id }}')">
-                                            Save
-                                        </button>
-                                    </div>
-                                </form>
+        <div id="posts" >
+            {% if posts.count == 0 %}
+                <div class="text-center">No posts yet.</div>
+            {% else %}
+                {% for post in page_obj %}
+                    <div id="{{ post.id }}" class="card shadow-sm p-2 mb-3 bg-white rounded">
+                        <!-- Post Header -->
+                        <div class="card-header pb-1 pt-2">
+                            <div class="row">
+                                <div class="col-10">
+                                    <a href="{% url 'profile' post.creator %}">
+                                        <h5 class=" post-creator">{{ post.creator.get_full_name }}
+                                            <span class="text-muted">@{{ post.creator }}</span></h5>
+                                    </a>
+                                </div>
+                                <!-- Edit Button -->
+                                {% if user == post.creator %}
+                                <div class="col-2 text-right">
+                                    <i class="fas fa-edit" onclick="toggleEditBtn('{{ post.id }}')"></i>
+                                </div>
+                                {% endif %}
                             </div>
                         </div>
-                        <p class="card-text">{{ post.content }}</p>
-                    </div>
-                    <!-- Post Footer -->
-                    <div class="card-footer">
-                        <div class="row">
-                            <div class="col-6">
-                                {% if user.is_authenticated %}
+                        <!-- Post Body -->
+                        <div class="card-body">
+                            <div id="edit-post-{{ post.id }}" class="row" style="display: none;">
+                                <div class="col-12">
+                                    <form>
+                                        {% csrf_token %}
+                                        <div class="form-group">
+                                            <label></label>
+                                            <textarea class="form-control edit-content" rows="4">{{ post.content }}</textarea>
+                                        </div>
+                                        <div class="form-group">
+                                            <button type="button" class="btn btn-primary" onclick="editPost('{{ post.id }}')">
+                                                Save
+                                            </button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                            <p class="card-text">{{ post.content }}</p>
+                        </div>
+                        <!-- Post Footer -->
+                        <div class="card-footer">
+                            <div class="row">
+                                <div class="col-6">
+                                    {% if user.is_authenticated %}
                                     {% if  user in post.liked_by %}
                                     <i class="fa fa-heart" onclick="toggleLike(this, '{{ post.id }}')"></i>
                                     {% else %}
                                     <i class="fa fa-heart-o" onclick="toggleLike(this, '{{ post.id }}')"></i>
                                     {% endif %}
-                                {% else %}
+                                    {% else %}
                                     <i class="fa fa-heart-o"></i>
-                                {% endif %}
+                                    {% endif %}
                                     <span id="like-{{ post.id }}" style="color: black;">{{ post.like_count }} likes</span>
+                                </div>
+                                <div class="col-6 text-right text-muted">{{ post.timestamp }}</div>
                             </div>
-                            <div class="col-6 text-right text-muted">{{ post.timestamp }}</div>
                         </div>
                     </div>
-                </div>
-            {% endfor %}
-
-            <!-- Paginator -->
-            <div class="pagination justify-content-center">
-                {% if page_obj.has_previous %}
-                    <a class="btn btn-outline-info mb-4 mx-1" href="?page={{ page_obj.previous_page_number }}">Previous</a>
-                {% endif %}
-                
-                {% for num in page_obj.paginator.page_range %}
-                {% if page_obj.number == num %}
-                    <a class="btn btn-info mb-4 mx-1" href="?page={{ num }}">{{ num }}</a>
-                {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
-                    <a class="btn btn-outline-info mb-4 mx-1" href="?page={{ num }}">{{ num }}</a>
-                {% endif %}
                 {% endfor %}
-                
-                {% if page_obj.has_next %}
-                    <a class="btn btn-outline-info mb-4 mx-1" href="?page={{ page_obj.next_page_number }}">Next</a>
-                {% endif %}
-            </div>
+
+                <!-- Paginator -->
+                <div class="pagination justify-content-center">
+                    {% if page_obj.has_previous %}
+                        <a class="btn btn-outline-primary my-4 mx-1" href="?page={{ page_obj.previous_page_number }}">Previous</a>
+                    {% endif %}
+                    
+                    {% for num in page_obj.paginator.page_range %}
+                    {% if page_obj.number == num %}
+                        <a class="btn btn-primary my-4 mx-1" href="?page={{ num }}">{{ num }}</a>
+                    {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                        <a class="btn btn-outline-primary my-4 mx-1" href="?page={{ num }}">{{ num }}</a>
+                    {% endif %}
+                    {% endfor %}
+                    
+                    {% if page_obj.has_next %}
+                        <a class="btn btn-outline-primary my-4 mx-1" href="?page={{ page_obj.next_page_number }}">Next</a>
+                    {% endif %}
+                </div>
+            {% endif %}
+            
 
         </div>
     </div>

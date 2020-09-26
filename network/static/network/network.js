@@ -99,17 +99,17 @@ function toggleFollow(btn, id) {
 
         // Update followers count
         var followersCount = document.querySelector('#followers-count');
-        followersCount.innerHTML = `Followers: ${result.followers_count}`
+        followersCount.innerHTML = ` <strong>${result.followers_count}</strong> followers`
 
         // Change button
         if (btn.classList.contains("btn-primary")) {
             btn.innerHTML = "Unfollow";
             btn.classList.remove("btn-primary")
-            btn.classList.add("btn-danger")
+            btn.classList.add("btn-outline-primary")
     
         } else {
             btn.innerHTML = "Follow";
-            btn.classList.remove("btn-danger")
+            btn.classList.remove("btn-outline-primary")
             btn.classList.add("btn-primary")
         }
 
