@@ -2,8 +2,14 @@ body {
     background-color: white;
 }
 
+/* Navigation */
 .post-nav, .post-creator {
     cursor: pointer;
+}
+
+.active {
+    font-weight: 700;
+    color: black;
 }
 
 /* Typography */
@@ -15,6 +21,7 @@ body {
 a:hover {
     text-decoration: none;
 }
+
 
 /* Icons */
 .fa-heart {

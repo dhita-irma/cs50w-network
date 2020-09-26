@@ -16,31 +16,31 @@
     <body>
 
         <!-- Navigation Bar -->
-        <nav class="navbar navbar-expand-lg navbar-light bg-light">
-            <a class="navbar-brand" href="{% url 'index' %}">Network</a>
+        <nav class="navbar navbar-expand-lg navbar-light shadow-sm px-4 mb-3 bg-white rounded sticky-top">
+            <a class="navbar-brand" href="{% url 'index' %}"><strong>Network</strong></a>
           
             <div>
               <ul class="navbar-nav mr-auto">
                 {% if user.is_authenticated %}
-                    <li class="nav-item">
+                    <li class="nav-item {% if request.resolver_match.url_name == 'profile' %}active{% endif %}">
                         <a id="logged-user" class="nav-link" href="{% url 'profile' user.username %}"><strong>{{ user.username }}</strong></a>
                     </li>
                 {% endif %}
-                <li class="nav-item" id="all">
+                <li class="nav-item {% if request.resolver_match.url_name == 'index' %}active{% endif %}" id="all">
                     <a class="nav-link post-nav" href="{% url 'index' %}">All Posts</a>
                 </li>
                 {% if user.is_authenticated %}
-                    <li class="nav-item" id="following">
+                    <li class="nav-item {% if request.resolver_match.url_name == 'following-posts' %}active{% endif %}" id="following">
                         <a class="nav-link post-nav" href="{% url 'following-posts' %}">Following</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'logout' %}">Log Out</a>
                     </li>
                 {% else %}
-                    <li class="nav-item">
+                    <li class="nav-item {% if request.resolver_match.url_name == 'login' %}active{% endif %}">
                         <a class="nav-link" href="{% url 'login' %}">Log In</a>
                     </li>
-                    <li class="nav-item">
+                    <li class="nav-item {% if request.resolver_match.url_name == 'register' %}active{% endif %}">
                         <a class="nav-link" href="{% url 'register' %}">Register</a>
                     </li>
                 {% endif %}
