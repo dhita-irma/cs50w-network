@@ -1,6 +1,7 @@
 import json
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
+from django.core.paginator import Paginator
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.shortcuts import render
 from django.urls import reverse
@@ -12,9 +13,15 @@ def index(request):
     """Render homepage displaying posts by all users."""
 
     posts = Post.objects.all()
+    paginator = Paginator(posts, 10)
+
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+
     return render(request, "network/index.html", {
         "title": "Home",
-        "posts": posts
+        "posts": posts,
+        "page_obj": page_obj
     })
 
 
@@ -117,13 +124,18 @@ def profile_view(request, username):
     try: 
         profile = User.objects.get(username=username)
         posts = Post.objects.filter(creator=profile.id)
+        paginator = Paginator(posts, 10)
+
+        page_number = request.GET.get('page')
+        page_obj = paginator.get_page(page_number)
     except User.DoesNotExist:
         return render(request, "network/error.html")
 
     return render(request, "network/profile.html", {
         "title": username,
         "profile": profile,
-        "posts": posts
+        "posts": posts,
+        "page_obj": page_obj
     })
 
 
