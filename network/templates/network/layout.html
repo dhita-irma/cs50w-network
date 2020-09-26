@@ -23,7 +23,7 @@
               <ul class="navbar-nav mr-auto">
                 {% if user.is_authenticated %}
                     <li class="nav-item {% if request.resolver_match.url_name == 'profile' %}active{% endif %}">
-                        <a id="logged-user" class="nav-link" href="{% url 'profile' user.username %}"><strong>{{ user.username }}</strong></a>
+                        <a id="logged-user" class="nav-link" href="{% url 'profile' user.username %}">{{ user.username }}</a>
                     </li>
                 {% endif %}
                 <li class="nav-item {% if request.resolver_match.url_name == 'index' %}active{% endif %}" id="all">
