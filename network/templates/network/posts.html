@@ -1,5 +1,5 @@
 <div id="posts-view" class="row">
-    <div class="col-10 offset-1">
+    <div class="col-8 offset-2">
         <div id="posts">
             {% for post in page_obj %}
                 <div id="{{ post.id }}" class="card mb-3">
@@ -8,7 +8,8 @@
                         <div class="row">
                             <div class="col-10">
                                 <a href="{% url 'profile' post.creator %}">
-                                    <h5 class=" post-creator">{{ post.creator }}</h5>
+                                    <h5 class=" post-creator">{{ post.creator.get_full_name }}
+                                    <span class="text-muted">@{{ post.creator }}</span></h5>
                                 </a>
                             </div>
                             <!-- Edit Button -->
@@ -54,7 +55,7 @@
                                 {% endif %}
                                     <span id="like-{{ post.id }}" style="color: black;">{{ post.like_count }} likes</span>
                             </div>
-                            <div class="col-6 text-right">{{ post.timestamp }}</div>
+                            <div class="col-6 text-right text-muted">{{ post.timestamp }}</div>
                         </div>
                     </div>
                 </div>

@@ -2,7 +2,44 @@
     cursor: pointer;
 }
 
-.fa {
+/* Typography */
+    .text-muted {
+        font-size: 15px;
+        font-weight: 400;
+    }
+
+
+/* Icons */
+.fa-heart {
     font-size: 18px;
     color: red;
+}
+
+.fa-heart-o {
+    font-size: 18px;
+    color: black;
+}
+
+.fa-edit {
+    color: grey;
+    cursor: pointer;
+}
+
+.fa-edit:hover {
+    color: black;
+}
+
+/* Cards */
+.card-header {
+    background-color: white;
+    border-bottom: none;
+}
+
+.card-body {
+    padding-top: 0px;
+}
+
+.card-footer {
+    border-top: none;
+    background-color: white;
 }
