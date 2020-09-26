@@ -36,16 +36,15 @@ function createPost(e) {
 function toggleEditBtn(id) {
 
     // Get post editor element and card-text element
-    var cardBody = document.getElementById(`${id}`).getElementsByClassName('card-body')[0];
-    var textArea = cardBody.getElementsByClassName('edit-post')[0];
+    var postEditor = document.querySelector(`#edit-post-${id}`);
     var cardText = document.getElementById(`${id}`).getElementsByClassName('card-text')[0];
 
     // Toggle post editor  
-    if (textArea.style.display === 'none') {
-        textArea.style.display = 'block';
+    if (postEditor.style.display === 'none') {
+        postEditor.style.display = 'block';
         cardText.style.display = 'none';
     } else {
-        textArea.style.display = 'none';
+        postEditor.style.display = 'none';
         cardText.style.display = 'block';
     }
 

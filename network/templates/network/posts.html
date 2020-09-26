@@ -21,7 +21,7 @@
                     </div>
                     <!-- Post Body -->
                     <div class="card-body">
-                        <div class="edit-post row" style="display: none;">
+                        <div id="edit-post-{{ post.id }}" class="row" style="display: none;">
                             <div class="col-12">
                                 <form>
                                     {% csrf_token %}
