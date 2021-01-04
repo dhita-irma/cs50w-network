@@ -13,7 +13,13 @@ def index(request):
 
 
 def post_list(request, feed):
+    """
+    API returning posts JsonResponsed depending on 3 arguments: 
+    'all' = return all posts 
+    'following' = return posts by following users 
+    '<username>' = return posts by user <username>
 
+    """
     # Return all posts 
     if feed == "all":
         posts = Post.objects.all()
@@ -42,6 +48,7 @@ def post_list(request, feed):
 
 @login_required
 def create_post(request):
+    """API to create post"""
 
     # Create new post must be via POST 
     if request.method != 'POST':
@@ -60,7 +67,8 @@ def create_post(request):
 
 @login_required
 def follow(request, pk):
-    
+    """API to follow or unfollow user"""
+
     # Muust be via POST 
     if request.method != 'POST':
         return JsonResponse({"error": "POST request required."}, status=400)
@@ -81,6 +89,7 @@ def follow(request, pk):
         
 
 def profile(request, username):
+    """API returning user profile"""
 
     # Query for requested user
     try:
