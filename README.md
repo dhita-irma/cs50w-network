@@ -1,4 +1,4 @@
-# Netowrk - Social Network
+# Network - Social Network
 Twitter-like social network built with Django 3.1.1 and JavaScript.
 
 
@@ -17,8 +17,9 @@ What's included in CS50W distribution code: initial django app set up, views and
 
 ## Technologies 
 #### Python Django 3.1.1
-- Create APIs: posts, profile, follow/unfollow, create post
-- Create models: User, Post, UserFollowing
+- Create endpoints: render homepage, following page, profile page
+- Create APIs: create post, post detials, edit posts, like/unlike posts
+- Create models: User, Post, UserFollowing, Like
 
 #### JavaScript
 - Fetch posts and profile with API
