@@ -22,7 +22,7 @@ What's included in CS50W distribution code: initial django app set up, views and
 - Create models: User, Post, UserFollowing, Like
 
 #### JavaScript
-- Fetch posts and profile with API
+- Fetch posts with API to create, display, and edit 
 - Implement dynamic Follow/Unfollow, Like/Unlike, and Edit button 
 - Create, hide, and display elements 
 
