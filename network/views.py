@@ -48,6 +48,7 @@ def following_posts(request):
 
 @login_required
 def create_post(request):
+    """API to create post"""
 
     # Create new post must be via POST 
     if request.method != 'POST':
@@ -98,6 +99,7 @@ def post(request, pk):
 
 @login_required
 def like(request, pk):
+    """API to like/unlike post"""
 
     # Must be via POST 
     if request.method != 'POST':
@@ -146,13 +148,21 @@ def profile_view(request, username):
 
 @login_required
 def follow(request, pk):
+    """API to follow/unfollow user"""
     
     # Muust be via POST 
     if request.method != 'POST':
         return JsonResponse({"error": "POST request required."}, status=400)
 
     current_user = request.user
-    target_user = User.objects.get(pk=pk)
+
+    # Query target user 
+    try:
+        target_user = User.objects.get(pk=pk)
+    except User.DoesNotExist:
+        return JsonResponse({
+                "error": f"User with id {pk} does not exist."
+            }, status=400)
     
     # Check if current user follow target user 
     if current_user not in target_user.get_followers():
